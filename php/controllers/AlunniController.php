@@ -30,7 +30,8 @@ class AlunniController
     $query = "INSERT INTO alunni (nome ,cognome) 
     VALUES ( '$name', '$surname' ); ";
     $mysqli_connection->query($query);
-    return $response->withHeader("Content-Length", "0")->withStatus(200);
+    $response->getBody()->write(json_encode($inputs));
+    return $response->withHeader("Content-Type", "application/json")->withStatus(200);
   }
 
   public function update(Request $request, Response $response, $args){
