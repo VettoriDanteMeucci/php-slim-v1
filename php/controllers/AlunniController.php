@@ -23,11 +23,37 @@ class AlunniController
   }
 
   public function create(Request $request, Response $response, $args){
-    // $mysqli_connection = new MySQLi('my_mariadb', 'root', 'ciccio', 'scuola');
-    // $query = "INSERT INTO alunni (nome, cognome)
-    // VALUES (". $args["name"] .", ". $args["surname"] .");";
-    // $result = $mysqli_connection->query($query);
-    // return $response->withHeader("Content-type", "application/json")->withStatus(200);
-    var_dump($request->post("name"));
+    $mysqli_connection = new MySQLi('my_mariadb', 'root', 'ciccio', 'scuola');
+    $inputs = json_decode($request->getBody()->getContents(), true);
+    $name = $inputs["name"];
+    $surname = $inputs["surname"];
+    $query = "INSERT INTO alunni (nome ,cognome) 
+    VALUES ( '$name', '$surname' ); ";
+    $mysqli_connection->query($query);
+    return $response->withHeader("Content-Length", "0")->withStatus(200);
+  }
+
+  public function update(Request $request, Response $response, $args){
+    $mysqli_connection = new MySQLi('my_mariadb', 'root', 'ciccio', 'scuola');
+    $newInfo = json_decode($request->getBody()->getContents(), true);
+    $name = $newInfo['name'];
+    $surname = $newInfo['surname'];
+    $query = "UPDATE alunni 
+    SET nome = '$name', cognome = '$surname' 
+    WHERE id = $args[id]";
+    $mysqli_connection->query($query);
+    $response->getBody()->write(json_encode($newInfo));
+    return $response->withHeader("Content-Type", "application/json")->withStatus(201);
+  }
+
+  public function delete(Request $request, Response $response, $args){
+    $mysqli_connection = new MySQLi('my_mariadb', 'root', 'ciccio', 'scuola');
+    $query = "DELETE FROM alunni WHERE id = $args[id]";
+    $res = $mysqli_connection->query($query);
+    if($res){
+      return $response->withStatus(200);
+    }else{
+      return $response->withStatus(404);
+    }
   }
 }
