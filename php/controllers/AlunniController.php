@@ -22,10 +22,37 @@ class AlunniController
     return $response->withHeader("Content-type", "application/json")->withStatus(200);
   }
 
+  public function isAttribute($value){
+    $mysqli_connection = new MySQLi('my_mariadb', 'root', 'ciccio', 'scuola');
+    $res = $mysqli_connection->query("DESCRIBE alunni");
+    $res = $res->fetch_all(MYSQLI_ASSOC);
+    foreach($res as $row){
+      if($row["Field"] == $value){
+        return true;
+      }
+    }
+    return false;
+  }
+
   public function search(Request $request, Response $response, $args){
-    $val = $args["value"]; 
+    $mysqli_connection = new MySQLi('my_mariadb', 'root', 'ciccio', 'scuola');
+    $val = explode(":", $args["value"]); 
+    $str = $val[0];
+    $orderby = strtolower($val[1]);    
+    $sort = strtoupper($val[2]);
     $query = "SELECT * FROM  
-    alunni WHERE ";
+    alunni WHERE nome LIKE '%$str%' 
+    OR cognome LIKE '%$str%' ";
+    if($this->isAttribute($orderby)){
+      $query .= " ORDER BY $orderby ";
+      if(($sort == "DESC" || $sort == "ASC") ){
+        $query .= $sort;
+      }
+    }
+    $res = $mysqli_connection->query($query);
+    $res = $res->fetch_all(MYSQLI_ASSOC);
+    $response->getBody()->write(json_encode($res));
+    return $response->withHeader("Content-type", "application/json")->withStatus(200);
   }
 
   public function create(Request $request, Response $response, $args){
