@@ -22,6 +22,12 @@ class AlunniController
     return $response->withHeader("Content-type", "application/json")->withStatus(200);
   }
 
+  public function search(Request $request, Response $response, $args){
+    $val = $args["value"]; 
+    $query = "SELECT * FROM  
+    alunni WHERE ";
+  }
+
   public function create(Request $request, Response $response, $args){
     $mysqli_connection = new MySQLi('my_mariadb', 'root', 'ciccio', 'scuola');
     $inputs = json_decode($request->getBody()->getContents(), true);
