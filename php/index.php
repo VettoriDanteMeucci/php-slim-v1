@@ -3,6 +3,7 @@ use Slim\Factory\AppFactory;
 
 require __DIR__ . '/vendor/autoload.php';
 require __DIR__ . '/controllers/AlunniController.php';
+require __DIR__ . '/controllers/.php';
 
 $app = AppFactory::create();
 
@@ -12,5 +13,7 @@ $app->get('/alunni/search/{value}', "AlunniController:search");
 $app->post('/alunni', "AlunniController:create");
 $app->put('/alunni/{id}', "AlunniController:update");
 $app->delete('/alunni/{id}', "AlunniController:delete");
+
+$app->get('/alunni/{id}/cert[/{id_cert}]', "AlunniController:delete");
 
 $app->run();
